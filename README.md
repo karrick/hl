@@ -24,6 +24,7 @@ supported as shown in the below table.
 
 NOTE: Not all ANSI codes work on every terminal.
 
+| -ansi option argument | effect  |
 |-----------------------|---------|
 | bold                  | ESC[1m  |
 | dim, faint            | ESC[2m  |
