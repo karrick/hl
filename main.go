@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/karrick/golf"
 	"github.com/karrick/golfw"
 )
 
@@ -27,10 +28,10 @@ func main() {
 	var prev int
 	var useBuffer bool
 
-	optAnsi := flag.String("ansi", "bold", "highlight ansi")
-	optBuffer := flag.Bool("buffer", false, "buffers even when writing to TTY")
-	optNoBuffer := flag.Bool("no-buffer", false, "prevent buffering when not writing to TTY")
-	flag.Parse()
+	optAnsi := golf.String("ansi", "bold", "highlight ansi")
+	optBuffer := golf.Bool("buffer", false, "buffers even when writing to TTY")
+	optNoBuffer := golf.Bool("no-buffer", false, "prevent buffering when not writing to TTY")
+	golf.Parse()
 
 	programName, err := os.Executable()
 	if err != nil {
