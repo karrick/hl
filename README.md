@@ -43,10 +43,10 @@ NOTE: Not all ANSI codes work on every terminal.
 | cyan                  | ESC[36m |
 | white                 | ESC[37m |
 
-#### Reverse
+#### Combining different ANSI effects
 
 ```Bash
-tail -f /var/log/messages | hl -ansi reverse failure
+tail -f /var/log/messages | hl -ansi reverse,red,bold failure
 ```
 
 ## Installation

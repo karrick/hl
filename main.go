@@ -13,10 +13,15 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 func main() {
+	var buf []byte
+	var pre, post string
+	var prev int
+
 	optAnsi := flag.String("ansi", "bold", "highlight ansi")
 	flag.Parse()
 
@@ -37,61 +42,12 @@ func main() {
 		os.Exit(2)
 	}
 
-	var buf []byte
-	var pre, post string
-
-	switch strings.ToLower(*optAnsi) {
-	case "bold":
-		pre = "\033[1m"
-		post = "\033[22m"
-	case "dim", "faint":
-		pre = "\033[2m"
-		post = "\033[22m"
-	case "italic":
-		pre = "\033[3m"
-		post = "\033[23m"
-	case "underline", "underscore":
-		pre = "\033[4m"
-		post = "\033[24m"
-	case "blinking":
-		pre = "\033[5m"
-		post = "\033[25m"
-	case "inverse", "reverse":
-		pre = "\033[7m"
-		post = "\033[27m"
-	case "hidden", "invisible":
-		pre = "\033[8m"
-		post = "\033[28m"
-	case "strikethrough":
-		pre = "\033[9m"
-		post = "\033[29m"
-	case "black":
-		pre = "\033[30m"
-		post = "\033[0m"
-	case "red":
-		pre = "\033[31m"
-		post = "\033[0m"
-	case "green":
-		pre = "\033[32m"
-		post = "\033[0m"
-	case "yellow":
-		pre = "\033[33m"
-		post = "\033[0m"
-	case "blue":
-		pre = "\033[34m"
-		post = "\033[0m"
-	case "magenta":
-		pre = "\033[35m"
-		post = "\033[0m"
-	case "cyan":
-		pre = "\033[36m"
-		post = "\033[0m"
-	case "white":
-		pre = "\033[37m"
-		post = "\033[0m"
-	default:
-		fmt.Fprintf(os.Stderr, "%s: cannot recognize -ansi option argument: %q\n", programName, *optAnsi)
-		os.Exit(2)
+	if len(*optAnsi) > 0 {
+		pre, post, err = ansiCodes(*optAnsi)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s: cannot process option argument for -ansi : %s\n", programName, err)
+			os.Exit(2)
+		}
 	}
 
 	buf = append(buf, post...) // very first print should set normal intensity
@@ -99,8 +55,6 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		line := scanner.Text()
-		var prev int
-
 		matches := patternRE.FindAllStringSubmatchIndex(line, -1)
 
 		for _, tuple := range matches {
@@ -120,10 +74,94 @@ func main() {
 		}
 
 		buf = buf[:0] // reset buffer for next line
+		prev = 0
 	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
 		os.Exit(1)
 	}
+}
+
+func ansiCodes(option string) (string, string, error) {
+	premap := make(map[int]struct{})
+	postmap := make(map[int]struct{})
+	var pres, posts []string
+	var pre, post int
+
+	for _, arg := range strings.Split(strings.ToLower(option), ",") {
+		switch arg {
+		case "bold":
+			pre = 1
+			post = 22
+		case "dim", "faint":
+			pre = 2
+			post = 22
+		case "italic":
+			pre = 3
+			post = 23
+		case "underline", "underscore":
+			pre = 4
+			post = 24
+		case "blinking":
+			pre = 5
+			post = 25
+		case "inverse", "reverse":
+			pre = 7
+			post = 27
+		case "hidden", "invisible":
+			pre = 8
+			post = 28
+		case "strikethrough":
+			pre = 9
+			post = 29
+		case "black":
+			pre = 30
+			post = 0
+		case "red":
+			pre = 31
+			post = 0
+		case "green":
+			pre = 32
+			post = 0
+		case "yellow":
+			pre = 33
+			post = 0
+		case "blue":
+			pre = 34
+			post = 0
+		case "magenta":
+			pre = 35
+			post = 0
+		case "cyan":
+			pre = 36
+			post = 0
+		case "white":
+			pre = 37
+			post = 0
+		default:
+			return "", "", fmt.Errorf("cannot recognize argument: %q", arg)
+		}
+
+		if _, ok := premap[pre]; !ok {
+			pres = append(pres, strconv.Itoa(pre))
+			premap[pre] = struct{}{}
+		}
+
+		if _, ok := postmap[post]; !ok {
+			posts = append(posts, strconv.Itoa(post))
+			postmap[post] = struct{}{}
+		}
+	}
+
+	return ansiFromCodes(pres), ansiFromCodes(posts), nil
+}
+
+// ansiFromCodes returns an ANSI control sequence corresponding to the list of
+// sequences provided.
+func ansiFromCodes(strs []string) string {
+	if len(strs) == 0 {
+		return ""
+	}
+	return "\x1b[" + strings.Join(strs, ";") + "m"
 }
