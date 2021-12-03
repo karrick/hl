@@ -8,7 +8,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -39,12 +38,12 @@ func main() {
 	}
 	programName = filepath.Base(programName)
 
-	if flag.NArg() != 1 {
-		fmt.Fprintf(os.Stderr, "%s: USAGE: %s [-ansi STRING] regex\n", programName, programName)
+	if golf.NArg() != 1 {
+		fmt.Fprintf(os.Stderr, "%s: USAGE: %s [--ansi STRING] [--buffer | --no-buffer] regex\n", programName, programName)
 		os.Exit(2)
 	}
 
-	patternRE, err := regexp.Compile(flag.Arg(0))
+	patternRE, err := regexp.Compile(golf.Arg(0))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: invalid regex pattern: %s\n", programName, err)
 		os.Exit(2)
