@@ -10,19 +10,26 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/karrick/golfw"
 )
 
 func main() {
+	var iowc io.WriteCloser = os.Stdout
 	var buf []byte
 	var pre, post string
 	var prev int
+	var useBuffer bool
 
 	optAnsi := flag.String("ansi", "bold", "highlight ansi")
+	optBuffer := flag.Bool("buffer", false, "buffers even when writing to TTY")
+	optNoBuffer := flag.Bool("no-buffer", false, "prevent buffering when not writing to TTY")
 	flag.Parse()
 
 	programName, err := os.Executable()
@@ -50,6 +57,24 @@ func main() {
 		}
 	}
 
+	if *optBuffer {
+		useBuffer = true
+	} else if !*optNoBuffer {
+		if fi, err := os.Stdout.Stat(); err == nil && fi.Mode()&os.ModeCharDevice == 0 {
+			// When not writing to terminal, do not need to write after
+			// every newline.
+			useBuffer = true
+			if iowc, err = golfw.NewWriteCloser(os.Stdout, 512); err != nil {
+				// When cannot allocate new write closer, fall back to
+				// writing to stdout.
+				iowc = os.Stdout
+				useBuffer = false
+			}
+		}
+	}
+	// fmt.Fprintf(os.Stderr, "useBuffer: %t\n", useBuffer)
+	// os.Exit(42)
+
 	buf = append(buf, post...) // very first print should set normal intensity
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -68,7 +93,7 @@ func main() {
 		buf = append(buf, line[prev:]...) // print remaining text after final match
 		buf = append(buf, '\n')
 
-		if _, err = os.Stdout.Write(buf); err != nil {
+		if _, err = iowc.Write(buf); err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
 			os.Exit(1)
 		}
@@ -80,6 +105,13 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
 		os.Exit(1)
+	}
+
+	if useBuffer {
+		if err := iowc.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
+			os.Exit(1)
+		}
 	}
 }
 
