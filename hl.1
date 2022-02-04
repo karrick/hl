@@ -1,7 +1,7 @@
 .Dd February 3, 2022
-.Dt hl 1
+.Dt HL 1
 .Os
-
+.\" PROLOGUE
 .Sh NAME
 .Nm hl
 .Nd read and highlight regular expression matches
@@ -14,22 +14,24 @@
 .Op Fl \-ansi Cm attribute
 .Op Fl \-no\-buffer
 .Cm pattern
-
+.\"
 .Sh DESCRIPTION
 The
 .Nm
 utility copies standard input to standard output, highlighting lines that match
 .Cm pattern ,
-which must be a valid regular expression. The optional command line arguments are as follows:
+which must be a valid regular expression.
+The optional command line arguments are as follows:
 .Bl -tag -width Ds
-
+.\"
 .It Fl \-ansi Cm attribute
 Highlights pattern matches using the specified ANSI code.
-
+.\"
 .Bd -ragged
 By default,
 .Nm
-uses ANSI codes to embolden text to highlight a match, and non-bold text for all other text. Other ANSI codes are supported as shown in the below table:
+uses ANSI codes to embolden text to highlight a match, and non-bold text for all other text.
+Other ANSI codes are supported as shown in the below table:
 .Bl -column -offset left 1111111111111111111111 222222222
 .It attribute               Ta ANSI code
 .It ----------------------- Ta ---------
@@ -50,36 +52,39 @@ uses ANSI codes to embolden text to highlight a match, and non-bold text for all
 .It cyan                    Ta ESC[36m
 .It white                   Ta ESC[37m
 .El
-
+.sp
 .Sy NOTE :
 Not all ANSI codes work on every terminal.
-
+.\"
+.Ed
 .It Fl \-buffer
-Buffers its output even when it detects that it is writing to a character device. 
-
+Buffers its output even when it detects that it is writing to a character device.
+.\"
 .Bd -ragged
 By default when
 .Nm
 detects that its standard output is directed to a character device, like a
 .Cm TTY
-terminal, it will write each line of output immediately after processing it. However, if
+terminal, it will write each line of output immediately after processing it.
+However, if
 .Nm
 detects that its standard output is not directed to a character device, for instance when it is being piped into another process, it will use a small memory buffer to reduce the number of system write calls it makes.
-
+.\"
 However, when given the
 .Fl \-buffer
 command line flag,
 .Nm
 will buffer its output even when it detects that it is writing to a character device.
 .Ed
-
+.\"
 .It Fl \-no\-buffer
-Does not buffer its output even when its output is not a character device. Use this when piping the output of
+Does not buffer its output even when its output is not a character device.
+Use this when piping the output of
 .Nm
 to another process, and each complete line should be flushed immedidately after it is processed.
-
+.\"
 .El
-
+.\"
 .Sh EXIT VALUES
 .Bl -tag -width Ds
 .It Cm 0
@@ -91,13 +96,17 @@ Error reading input
 .It Cm 3
 Error writing output
 .El
-
+.\"
 .Sh EXAMPLES
-.Dl % tail /var/log/messages | hl failure
-
-.Dl % tail /var/log/messages | hl \-\-ansi red \-\-no\-buffer BAD | hl \-\-ansi green OK
-
+.Bl -column
+.It Tail a file and highlight any instances of the word failure using a bold typeface.
+.Dl % tail \-f /var/log/messages | hl failure
+.It Tail a file and highlight Cm BAD No in the color red, and highlight Cm OK No in the color green.
+.Dl % tail \-f /var/log/messages | hl \-\-ansi red \-\-no\-buffer BAD | hl \-\-ansi green OK
+.El
+.\" EPILOGUE
 .Sh HISTORY
 .Sh AUTHORS
 .An Karrick McDermott
 .Lk https://linkedin.com/in/karrick
+.sp
