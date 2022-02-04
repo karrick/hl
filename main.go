@@ -40,20 +40,20 @@ func main() {
 
 	if golf.NArg() != 1 {
 		fmt.Fprintf(os.Stderr, "%s: USAGE: %s [--ansi STRING] [--buffer | --no-buffer] regex\n", programName, programName)
-		os.Exit(2)
+		os.Exit(1)
 	}
 
 	patternRE, err := regexp.Compile(golf.Arg(0))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: invalid regex pattern: %s\n", programName, err)
-		os.Exit(2)
+		os.Exit(1)
 	}
 
 	if len(*optAnsi) > 0 {
 		pre, post, err = ansiCodes(*optAnsi)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: cannot process option argument for -ansi : %s\n", programName, err)
-			os.Exit(2)
+			os.Exit(1)
 		}
 	}
 
@@ -95,7 +95,7 @@ func main() {
 
 		if _, err = iowc.Write(buf); err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
-			os.Exit(1)
+			os.Exit(3)
 		}
 
 		buf = buf[:0] // reset buffer for next line
@@ -104,13 +104,13 @@ func main() {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
-		os.Exit(1)
+		os.Exit(2)
 	}
 
 	if useBuffer {
 		if err := iowc.Close(); err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %s\n", programName, err)
-			os.Exit(1)
+			os.Exit(3)
 		}
 	}
 }

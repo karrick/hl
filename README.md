@@ -25,23 +25,23 @@ supported as shown in the below table.
 NOTE: Not all ANSI codes work on every terminal.
 
 | --ansi option argument | effect  |
-|-----------------------|---------|
-| bold                  | ESC[1m  |
-| dim, faint            | ESC[2m  |
-| italic                | ESC[3m  |
-| underline, underscore | ESC[4m  |
-| blinking              | ESC[5m  |
-| reverse, inverse      | ESC[7m  |
-| hidden, invisible     | ESC[8m  |
-| strikethrough         | ESC[9m  |
-| black                 | ESC[30m |
-| red                   | ESC[31m |
-| green                 | ESC[32m |
-| yellow                | ESC[33m |
-| blue                  | ESC[34m |
-| magenta               | ESC[35m |
-| cyan                  | ESC[36m |
-| white                 | ESC[37m |
+|------------------------|---------|
+| bold                   | ESC[1m  |
+| dim, faint             | ESC[2m  |
+| italic                 | ESC[3m  |
+| underline, underscore  | ESC[4m  |
+| blinking               | ESC[5m  |
+| reverse, inverse       | ESC[7m  |
+| hidden, invisible      | ESC[8m  |
+| strikethrough          | ESC[9m  |
+| black                  | ESC[30m |
+| red                    | ESC[31m |
+| green                  | ESC[32m |
+| yellow                 | ESC[33m |
+| blue                   | ESC[34m |
+| magenta                | ESC[35m |
+| cyan                   | ESC[36m |
+| white                  | ESC[37m |
 
 #### Combining different ANSI effects
 
