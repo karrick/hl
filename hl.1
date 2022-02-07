@@ -7,10 +7,11 @@
 .Nd read and highlight regular expression matches
 .Sh SYNOPSIS
 .Nm hl Cm pattern
-.Nm hl Op Fl \-ansi Cm attribute
+.Nm hl
+.Op Fl \-ansi Cm attribute
 .Op Fl \-buffer
 .Cm pattern
-.Nm
+.Nm hl
 .Op Fl \-ansi Cm attribute
 .Op Fl \-no\-buffer
 .Cm pattern
@@ -22,69 +23,70 @@ utility copies standard input to standard output, highlighting lines that match
 .Cm pattern ,
 which must be a valid regular expression.
 The optional command line arguments are as follows:
-.Bl -tag -width Ds
-.\"
+.Bl -tag -width 0n
 .It Fl \-ansi Cm attribute
-Highlights pattern matches using the specified ANSI code.
-.\"
+Highlights pattern matches using the ANSI code corresponding to
+.Cm attribute .
 .Bd -ragged
 By default,
 .Nm
-uses ANSI codes to embolden text to highlight a match, and non-bold text for all other text.
+uses ANSI codes to embolden text to highlight match text, and non-bold
+text for all other text.
 Other ANSI codes are supported as shown in the below table:
 .Bl -column -offset left 1111111111111111111111 222222222
-.It attribute               Ta ANSI code
-.It ----------------------- Ta ---------
-.It bold                    Ta ESC[1m
-.It dim | faint             Ta ESC[2m
-.It italic                  Ta ESC[3m
-.It underline | underscore  Ta ESC[4m
-.It blinking                Ta ESC[5m
-.It reverse | inverse       Ta ESC[7m
-.It hidden | invisible      Ta ESC[8m
-.It strikethrough           Ta ESC[9m
-.It black                   Ta ESC[30m
-.It red                     Ta ESC[31m
-.It green                   Ta ESC[32m
-.It yellow                  Ta ESC[33m
-.It blue                    Ta ESC[34m
-.It magenta                 Ta ESC[35m
-.It cyan                    Ta ESC[36m
-.It white                   Ta ESC[37m
+.It attribute                     Ta ANSI code
+.It -----------------------       Ta ---------
+.It bold                          Ta ESC[1m
+.It dim Ns | Ns faint             Ta ESC[2m
+.It italic                        Ta ESC[3m
+.It underline Ns | Ns underscore  Ta ESC[4m
+.It blinking                      Ta ESC[5m
+.It reverse Ns | Ns inverse       Ta ESC[7m
+.It hidden Ns | Ns invisible      Ta ESC[8m
+.It strikethrough                 Ta ESC[9m
+.It black                         Ta ESC[30m
+.It red                           Ta ESC[31m
+.It green                         Ta ESC[32m
+.It yellow                        Ta ESC[33m
+.It blue                          Ta ESC[34m
+.It magenta                       Ta ESC[35m
+.It cyan                          Ta ESC[36m
+.It white                         Ta ESC[37m
 .El
-.sp
+.Ed
+.Pp
 .Sy NOTE :
 Not all ANSI codes work on every terminal.
-.\"
-.Ed
 .It Fl \-buffer
-Buffers its output even when it detects that it is writing to a character device.
-.\"
+Buffers its output even when it detects that it is writing to a
+character device.
 .Bd -ragged
 By default when
 .Nm
 detects that its standard output is directed to a character device, like a
-.Cm TTY
-terminal, it will write each line of output immediately after processing it.
+.Cm TTY ,
+it will write each line of output immediately after processing it.
 However, if
 .Nm
-detects that its standard output is not directed to a character device, for instance when it is being piped into another process, it will use a small memory buffer to reduce the number of system write calls it makes.
-.\"
+detects that its standard output is not directed to a character
+device, for instance when it is being piped into another process, it
+will use a small memory buffer to reduce the number of system write
+calls it makes.
 However, when given the
 .Fl \-buffer
 command line flag,
 .Nm
-will buffer its output even when it detects that it is writing to a character device.
+will buffer its output even when it detects that it is writing to a
+character device.
 .Ed
-.\"
 .It Fl \-no\-buffer
-Does not buffer its output even when its output is not a character device.
+Does not buffer its output even when its output is not a character
+device.
 Use this when piping the output of
 .Nm
-to another process, and each complete line should be flushed immedidately after it is processed.
-.\"
+to another process, and each complete line should be flushed
+immedidately after it is processed.
 .El
-.\"
 .Sh EXIT VALUES
 .Bl -tag -width Ds
 .It Cm 0
@@ -96,16 +98,34 @@ Error reading input
 .It Cm 3
 Error writing output
 .El
-.\"
 .Sh EXAMPLES
-.Bl -column
-.It Tail a file and highlight any instances of the word failure using a bold typeface.
-.Dl % tail \-f /var/log/messages | hl failure
-.It Tail a file and highlight Cm BAD No in the color red, and highlight Cm OK No in the color green.
-.Dl % tail \-f /var/log/messages | hl \-\-ansi red \-\-no\-buffer BAD | hl \-\-ansi green OK
+.Bl -tag -width 0n
+.It Sy Example 1\&: Highlighting a text pattern from a stream
+.Pp
+This example tails a file and highlights any instances of the word
+.Cm failure
+using a bold typeface:
+.Bd -literal -offset 2n
+.Li # Ic tail \-f /var/log/messages | hl failure
+.Ed
+.It Sy Example 2\&: Highlighting multiple patterns from a stream
+.Pp
+.Nm
+invocations may be chained together to highlight multiple patterns
+using different ANSI codes.
+When doing so, it is common to turn off buffering in every instance of
+.Nm
+that pipes its output to another program.
+This example will tail a file and highlight
+.Cm BAD
+with red, and
+.Cm OK
+with green.
+.Bd -literal -offset 2n
+.Li # Ic tail \-f /var/log/messages | hl \-\-ansi red \-\-no\-buffer BAD | hl \-\-ansi green OK
+.Ed
 .El
 .\" EPILOGUE
-.Sh HISTORY
 .Sh AUTHORS
 .An Karrick McDermott
 .Lk https://linkedin.com/in/karrick
