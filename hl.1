@@ -19,7 +19,8 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility copies standard input to standard output, highlighting lines that match
+utility copies standard input to standard output, highlighting lines
+that match
 .Cm pattern ,
 which must be a valid regular expression.
 The optional command line arguments are as follows:
@@ -32,7 +33,9 @@ By default,
 .Nm
 uses ANSI codes to embolden text to highlight match text, and non-bold
 text for all other text.
-Other ANSI codes are supported as shown in the below table:
+Other ANSI codes are supported as shown in the below table.
+Several rows contain multiple attributes, indicating they are intended
+synonyms.
 .Bl -column -offset left 1111111111111111111111 222222222
 .It attribute                     Ta ANSI code
 .It -----------------------       Ta ---------
@@ -63,7 +66,8 @@ character device.
 .Bd -ragged
 By default when
 .Nm
-detects that its standard output is directed to a character device, like a
+detects that its standard output is directed to a character device,
+like a
 .Cm TTY ,
 it will write each line of output immediately after processing it.
 However, if
